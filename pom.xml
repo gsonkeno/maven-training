@@ -26,11 +26,33 @@
       <scope>test</scope>
     </dependency>
 
+    <!--mvn依赖
+    默认域为compile  编译和打包时都会将依赖存储进去
+    可选域有test     测试时有效，编译和打包时都不会用
+    可选域有provided 编译和测试的过程有效，最后生成war包时不会加入，诸如：servlet-api，因为servlet-api，tomcat等web服务器已经存在了
+    可选域有runtime 在运行的时候依赖，在编译的时候不依赖,如 mysql-connector-java
+    -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.8.5</version>
     </dependency>
+
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.6</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -90,6 +112,7 @@
         </configuration>
       </plugin>
 
+      <!--此插件参考 http://maven.apache.org/plugins/maven-dependency-plugin/copy-dependencies-mojo.html-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -103,7 +126,37 @@
             <configuration>
               <type>jar</type>
               <includeTypes>jar</includeTypes>
+              <!--scope gives runtime and compile dependencies
+                   只包含那些域scope为runtime和compile的依赖dependency-->
+              <includeScope>runtime</includeScope>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!--文件拷贝插件-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <!--<tasks>-->
+                <!--<move file="${project.build.directory}/classes/filter/*"-->
+                      <!--todir="${project.build.directory}/conf" />-->
+              <!--</tasks>-->
+
+              <target>
+                <copy todir="${project.build.directory}/conf" overwrite="true">
+                  <fileset dir="${project.build.directory}/classes/filter/" />
+                </copy>
+              </target>
             </configuration>
           </execution>
         </executions>
