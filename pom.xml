@@ -125,6 +125,16 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+
         <configuration>
           <classesDirectory>target/classes/</classesDirectory>
           <archive>
@@ -139,6 +149,10 @@
               <Class-Path>.</Class-Path>
             </manifestEntries>
           </archive>
+          <excludes>
+            <!--移除目录下的递归所有文件,貌似自身文件夹filter移除不了-->
+            <exclude>filter/**/*</exclude>
+          </excludes>
         </configuration>
       </plugin>
 
